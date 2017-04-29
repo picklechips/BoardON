@@ -4,14 +4,14 @@
 // Timer class
 class Timer
 {
-private:
-    float startTime; // The time when the timer started running
-
 public:
     Timer();
     void reset();
     void update();
     float deltaTime();
+
+private:
+    float startTime;
 
 };
 

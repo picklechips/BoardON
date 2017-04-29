@@ -9,24 +9,6 @@ using namespace std;
 
 class Obstacle
 {
-private:
-    string name;
-
-    int xPos;
-    int yPos;
-    
-    bool canCollide;
-    SDL_Rect collisionRect;
-    bool isBgOnly;
-    
-    bool jumpable;
-    bool jumpedOver;
-
-    float pointsToGive;
-    
-    SDL_Texture* obstaclesSheet;
-    SDL_Rect imgRect;
-
 public:
     Obstacle();
     Obstacle(string name, int x, int y, int height, int width, bool isBgOnly, SDL_Texture* obstacles); // Obstacle without collision
@@ -51,6 +33,24 @@ public:
     int getWidth(){return imgRect.w;};
     int getHeight(){return imgRect.h;};
     bool isJumpable(){return jumpable;}
+
+private:
+    string name;
+
+    int xPos;
+    int yPos;
+    
+    bool canCollide;
+    SDL_Rect collisionRect;
+    bool isBgOnly;
+    
+    bool jumpable;
+    bool jumpedOver;
+
+    float pointsToGive;
+    
+    SDL_Texture* obstaclesSheet;
+    SDL_Rect imgRect;
 };
 
 #endif
