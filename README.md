@@ -1,6 +1,8 @@
 # BoardON
 A 2D endless scrolling snowboarding game developed using C++ and SDL2 available on both windows and linux
 
+![Screenshot](http://www.ryan-martin.ca/ressources/supesnow-forest.png)
+
 ## How to play:
 - Use A/D or Left/Right keys to move side to side
 - Use W/S or Up/Down keys to speed up or slow down
