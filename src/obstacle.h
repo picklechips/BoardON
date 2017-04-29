@@ -10,17 +10,21 @@ using namespace std;
 class Obstacle
 {
 private:
-    bool canCollide; // Can this obstacle collide with the player?
-    SDL_Rect collisionRect;
-    bool jumpable;
-    bool isBgOnly;
-    bool jumpedOver;
-    float pointsToGive;
     string name;
-    SDL_Texture* obstaclesSheet;
 
-protected:
-    int xPos, yPos;
+    int xPos;
+    int yPos;
+    
+    bool canCollide;
+    SDL_Rect collisionRect;
+    bool isBgOnly;
+    
+    bool jumpable;
+    bool jumpedOver;
+
+    float pointsToGive;
+    
+    SDL_Texture* obstaclesSheet;
     SDL_Rect imgRect;
 
 public:
@@ -28,9 +32,19 @@ public:
     Obstacle(string name, int x, int y, int height, int width, bool isBgOnly, SDL_Texture* obstacles); // Obstacle without collision
     Obstacle(string name, int x, int y, int height, int width, int collisionx, int collisiony, int collisionWidth, int collisionHeight, 
                 bool jumpable, bool isBgOnly, float ptstogive, SDL_Texture* obstacles); // Obstacle with collision
-    void drawObstacle(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer); // Drawing the obstacle to the screen
-    virtual void drawToBackground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer); // Drawing it to the screen after the player passed
-    virtual void drawToForeground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer); // Drawing it to the screen before the player has passed
+
+    void drawObstacle(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
+    
+
+    // Since After the player passes an obstacle, he is in front of it, the obstacle should be drawn to the
+    // background (behind the player). But if the player has not yet passed the object, it should be
+    // drawn to the foreground (in front of the player). To avoid drawing an object twice each frame (once
+    // to the background and once to the foreground) Two different functions are used, so an object is only
+    // drawn to the screen once. drawToBackground is called before the player is drawn, and drawToForeground
+    // is called AFTER the player is drawn.
+    void drawToBackground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
+    void drawToForeground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
+
     void setxy(int x, int y){xPos = x;yPos = y;}
     int getxPos(){return xPos;};
     int getyPos(){return yPos;};

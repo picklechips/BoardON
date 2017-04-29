@@ -20,10 +20,6 @@ Biome::Biome(vector<Obstacle> obsts, vector<int> amntObsts)
         }
     }
 }
-Biome::~Biome()
-{
-    //delete[]obstsInBiome; // deleting the obstacle array
-}
 
 // Loading the Biome
 void Biome::load(int topOfBiome)

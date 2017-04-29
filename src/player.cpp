@@ -30,6 +30,12 @@ Player::Player()
     SDL_Color textColour = {0, 0, 0, 0};
 }
 
+void Player::obstCollidedWith(int pos, int height)
+{
+    collidedObst.yPos = pos;
+    collidedObst.height = height;
+}
+
 void Player::reset()
 {
     x = SCREEN_WIDTH/2 - 16;

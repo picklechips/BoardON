@@ -94,14 +94,6 @@ void Obstacle::drawObstacle(int x, int y, SDL_Rect camera, float deltaTime, Play
     }
 }
 
-/*
-Since After the player passes an obstacle, he is in front of it, the obstacle should be drawn to the
-background (behind the player). But if the player has not yet passed the object, it should be
-drawn to the foreground (in front of the player). To avoid drawing an object twice each frame (once
-to the background and once to the foreground) Two different functions are used, so an object is only
-drawn to the screen once. drawToBackground is called before the player is drawn, and drawToForeground
-is called AFTER the player is drawn.
-*/
 void Obstacle::drawToBackground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer)
 {
     // Only draw if the player has passed the obstacle
