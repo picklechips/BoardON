@@ -1,7 +1,8 @@
 #include "obstacle.h"
+#include "game.h"
 
-const int SCREEN_WIDTH = 900;
-const int SCREEN_HEIGHT = 640;
+extern const int SCREEN_WIDTH;
+extern const int SCREEN_HEIGHT;
 
 Obstacle::Obstacle()
 {
@@ -12,7 +13,7 @@ Obstacle::Obstacle()
     jumpedOver = false;
 }
 // Initializing obstacle WITHOUT collision
-Obstacle::Obstacle(string name, int x, int y, int width, int height, bool bgOnly, SDL_Texture* obstacles)
+Obstacle::Obstacle(std::string name, int x, int y, int width, int height, bool bgOnly, SDL_Texture* obstacles)
 {
     SDL_Rect tempRect = {x, y, width, height};
     imgRect = tempRect;
@@ -23,7 +24,7 @@ Obstacle::Obstacle(string name, int x, int y, int width, int height, bool bgOnly
 }
 
 // Initializing an obstacle WITH collision
-Obstacle::Obstacle(string obstname, int x, int y, int width, int height, int collisionx, int collisiony, 
+Obstacle::Obstacle(std::string obstname, int x, int y, int width, int height, int collisionx, int collisiony, 
                     int collisionWidth, int collisionHeight, bool isJumpable, bool isbg, float ptstogive, SDL_Texture* obstacles)
 {
     canCollide = true;

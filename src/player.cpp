@@ -5,12 +5,14 @@
 #include <sstream>
 
 #include "player.h"
+#include "game.h"
 
 using namespace std;
 
+extern const int SCREEN_WIDTH;
+extern const int SCREEN_HEIGHT;
 const float jumpTime = 0.3f;
-const int SCREEN_WIDTH = 900;
-const int SCREEN_HEIGHT = 640;
+
 SDL_Rect Rect(int x, int y, int width, int height)
 {
     SDL_Rect tempRect = {x, y, width, height};

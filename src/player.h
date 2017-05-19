@@ -4,8 +4,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-using namespace std;
-
 typedef struct ObstacleProperties {
     int yPos;
     int height;

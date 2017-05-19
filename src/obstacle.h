@@ -5,14 +5,12 @@
 
 #include "player.h"
 
-using namespace std;
-
 class Obstacle
 {
 public:
     Obstacle();
-    Obstacle(string name, int x, int y, int height, int width, bool isBgOnly, SDL_Texture* obstacles); // Obstacle without collision
-    Obstacle(string name, int x, int y, int height, int width, int collisionx, int collisiony, int collisionWidth, int collisionHeight, 
+    Obstacle(std::string name, int x, int y, int height, int width, bool isBgOnly, SDL_Texture* obstacles); // Obstacle without collision
+    Obstacle(std::string name, int x, int y, int height, int width, int collisionx, int collisiony, int collisionWidth, int collisionHeight, 
                 bool jumpable, bool isBgOnly, float ptstogive, SDL_Texture* obstacles); // Obstacle with collision
 
     void drawObstacle(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
@@ -35,7 +33,7 @@ public:
     bool isJumpable(){return jumpable;}
 
 private:
-    string name;
+    std::string name;
 
     int xPos;
     int yPos;

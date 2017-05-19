@@ -5,13 +5,11 @@
 
 #include "obstacle.h"
 
-using namespace std;
-
 class Biome
 {
 public:
     Biome() {};
-    Biome(vector<Obstacle> obsts, vector<int> amntObsts);
+    Biome(std::vector<Obstacle> obsts, std::vector<int> amntObsts);
 
     void load(int bottomOfBiome);
 
@@ -23,8 +21,8 @@ public:
     void setSeed(double newSeed){seed = newSeed;}
 
 private:
-    vector<Obstacle> obstsInBiome; 
-    vector<int> amountOfObst; 
+    std::vector<Obstacle> obstsInBiome; 
+    std::vector<int> amountOfObst; 
     double seed;
 
 };
