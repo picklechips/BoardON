@@ -18,19 +18,16 @@
 
 using namespace std;
 
-/*************************
-The main game function
-*************************/
 int main(int argc, char* args[])
 {
-    if (!Game::init())
+    if (!Game::Init())
     {
         cout << "Failed to initialize!\n";
     }
     else
     {
         // Load media
-        if (!Game::loadMedia())
+        if (!Game::LoadMedia())
         {
             cout << "The media failed to load!\n";
         }
@@ -44,14 +41,14 @@ int main(int argc, char* args[])
             SDL_Color defaultTextColor = {0,0,0};
 
             // Creating obstacles
-            Obstacle cabin("cabin", 0, 0, 128, 128, 20, 70, 88, 48, false, false, 0, Game::Obstacles);
-            Obstacle stairs("stairs", 128, 0, 64, 128, 10, 15, 50, 98, false, true, 0, Game::Obstacles);
-            Obstacle tree("tree", 192, 0, 64, 64, 28, 50, 3, 2, false, false, 0, Game::Obstacles);
-            Obstacle rock("rock", 0, 128, 32, 32, 10, 20, 9, 8, true, false, 25, Game::Obstacles);
-            Obstacle bigRock("big rock", 384, 0, 64, 64, 25, 25, 29, 32, false, false, 0, Game::Obstacles);
-            Obstacle cliff("cliff", 256, 0, 128, 128, 15, 50, 98, 78, true, true, 60, Game::Obstacles);
-            Obstacle jump("jump", 0, 160, 64, 64, true, Game::Obstacles);
-            Obstacle log ("log", 192, 128, 64, 32, 7, 5, 50, 15, true, false, 25, Game::Obstacles);
+            Obstacle cabin("cabin", 0, 0, 128, 128, 20, 70, 88, 48, false, false, 0, Game::ObstacleSpriteSheet());
+            Obstacle stairs("stairs", 128, 0, 64, 128, 10, 15, 50, 98, false, true, 0, Game::ObstacleSpriteSheet());
+            Obstacle tree("tree", 192, 0, 64, 64, 28, 50, 3, 2, false, false, 0, Game::ObstacleSpriteSheet());
+            Obstacle rock("rock", 0, 128, 32, 32, 10, 20, 9, 8, true, false, 25, Game::ObstacleSpriteSheet());
+            Obstacle bigRock("big rock", 384, 0, 64, 64, 25, 25, 29, 32, false, false, 0, Game::ObstacleSpriteSheet());
+            Obstacle cliff("cliff", 256, 0, 128, 128, 15, 50, 98, 78, true, true, 60, Game::ObstacleSpriteSheet());
+            Obstacle jump("jump", 0, 160, 64, 64, true, Game::ObstacleSpriteSheet());
+            Obstacle log ("log", 192, 128, 64, 32, 7, 5, 50, 15, true, false, 25, Game::ObstacleSpriteSheet());
 
             // Creating biomes
             // Village biome
@@ -80,21 +77,21 @@ int main(int argc, char* args[])
 
 
             // Initializing the trails
-            SDL_Texture* trailTexture = Game::loadTexture("../images/trail.bmp"); // Loading the trail texture
+            SDL_Texture* trailTexture = Game::LoadTexture("../images/trail.bmp"); // Loading the trail texture
             // Creating the background textures to draw the trail to
-            SDL_Texture * trail = SDL_CreateTexture(Game::Renderer, SDL_PIXELFORMAT_ABGR1555, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+            SDL_Texture * trail = SDL_CreateTexture(Game::Renderer(), SDL_PIXELFORMAT_ABGR1555, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
             // Setting it to be white
-            SDL_SetRenderTarget(Game::Renderer, trail);
-            SDL_SetRenderDrawColor(Game::Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-            SDL_RenderClear(Game::Renderer);
-            SDL_SetRenderTarget(Game::Renderer, NULL);
+            SDL_SetRenderTarget(Game::Renderer(), trail);
+            SDL_SetRenderDrawColor(Game::Renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(Game::Renderer());
+            SDL_SetRenderTarget(Game::Renderer(), NULL);
             // Creating the background texture to store the previous trails
-            SDL_Texture * prevtrail = SDL_CreateTexture(Game::Renderer, SDL_PIXELFORMAT_ABGR1555, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
+            SDL_Texture * prevtrail = SDL_CreateTexture(Game::Renderer(), SDL_PIXELFORMAT_ABGR1555, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
             // Setting it to be white
-            SDL_SetRenderTarget(Game::Renderer, prevtrail);
-            SDL_SetRenderDrawColor(Game::Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-            SDL_RenderClear(Game::Renderer);
-            SDL_SetRenderTarget(Game::Renderer, NULL);
+            SDL_SetRenderTarget(Game::Renderer(), prevtrail);
+            SDL_SetRenderDrawColor(Game::Renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(Game::Renderer());
+            SDL_SetRenderTarget(Game::Renderer(), NULL);
 
             int trailPos = 0;
 
@@ -105,7 +102,7 @@ int main(int argc, char* args[])
             // Bottom of the last loaded biome
             int biomeTop = 0;
 
-            curBiome.load(biomeTop);
+            curBiome.Load(biomeTop);
             bool quit = false; // Flag to check if user has quit
             bool paused = false; // Flag to check if game is paused
             while (!quit)
@@ -119,8 +116,8 @@ int main(int argc, char* args[])
                     else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_p)
                     {
                         paused = true;
-                        Game::RenderText(SCREEN_WIDTH/2-18, SCREEN_HEIGHT/2, "PAUSED", defaultTextColor, Game::font);
-                        SDL_RenderPresent(Game::Renderer);
+                        Game::RenderText(SCREEN_WIDTH/2-18, SCREEN_HEIGHT/2, "PAUSED", defaultTextColor, Game::DefaultFont());
+                        SDL_RenderPresent(Game::Renderer());
                     }
                 }
 
@@ -139,9 +136,9 @@ int main(int argc, char* args[])
                     }
                 }
 
-                Game::player.input(Time.deltaTime(), playerJumpCooldown);
+                Game::MainPlayer().input(Time.deltaTime(), playerJumpCooldown);
                 // Check if the player is close enough to spawn the next biome
-                if (Game::player.yPos() > biomeTop+480)
+                if (Game::MainPlayer().yPos() > biomeTop+480)
                 {
                     // Readjusting the top of the current biome
                     biomeTop += 960;
@@ -149,69 +146,67 @@ int main(int argc, char* args[])
                     prevBiome = curBiome;
                     // Randomizing the next biome
                     curBiome = Game::RandBiome(biomes, totBiomes);
-                    curBiome.setSeed(time(NULL));
-                    curBiome.load(biomeTop);
+                    curBiome.SetSeed(time(NULL));
+                    curBiome.Load(biomeTop);
                 }
                 // Check if the trails need to be refreshed
-                if (Game::player.yPos() > trailPos + SCREEN_HEIGHT-32)
+                if (Game::MainPlayer().yPos() > trailPos + SCREEN_HEIGHT-32)
                 {
-                    SDL_SetRenderTarget(Game::Renderer, prevtrail);
-                    SDL_RenderCopy(Game::Renderer, trail, NULL, NULL);
-                    SDL_SetRenderTarget(Game::Renderer, trail);
-                    SDL_RenderClear(Game::Renderer);
-                    SDL_SetRenderTarget(Game::Renderer, NULL);
+                    SDL_SetRenderTarget(Game::Renderer(), prevtrail);
+                    SDL_RenderCopy(Game::Renderer(), trail, NULL, NULL);
+                    SDL_SetRenderTarget(Game::Renderer(), trail);
+                    SDL_RenderClear(Game::Renderer());
+                    SDL_SetRenderTarget(Game::Renderer(), NULL);
                     trailPos += SCREEN_HEIGHT;
                 }
 
                 // Moving the player
-                Game::player.movePlayer(Time.deltaTime());
+                Game::MainPlayer().movePlayer(Time.deltaTime());
                 // Adding to the player's score
-                Game::player.adjustScore(Time.deltaTime());
+                Game::MainPlayer().adjustScore(Time.deltaTime());
                 // Check for player collision
-                if (Game::player.collided())
+                if (Game::MainPlayer().collided())
                 {
-                    Game::player.crash(crashTimer, Time.deltaTime());
+                    Game::MainPlayer().crash(crashTimer, Time.deltaTime());
                 }
 
                 // Adjusting the player to the camera
-                if (Game::player.IsInAir())
-                    camera.y = (Game::player.yPos() + 16) - 240;
+                if (Game::MainPlayer().IsInAir())
+                    camera.y = (Game::MainPlayer().yPos() + 16) - 240;
                 else
-                    camera.y = (Game::player.yPos() + 16) - 250;
+                    camera.y = (Game::MainPlayer().yPos() + 16) - 250;
 
                 Time.reset(); // Reset the frame time
                 //Drawing to the screen
-                SDL_RenderClear(Game::Renderer); // Clearing the screen
-                Game::drawTrails(trailTexture, trail, prevtrail, trailPos, camera);
-                Game::draw(curBiome, camera, biomeTop, prevBiome, Time.deltaTime());
-                SDL_RenderPresent(Game::Renderer);
+                SDL_RenderClear(Game::Renderer()); // Clearing the screen
+                Game::DrawTrails(trailTexture, trail, prevtrail, trailPos, camera);
+                Game::Draw(curBiome, camera, biomeTop, prevBiome, Time.deltaTime());
+                SDL_RenderPresent(Game::Renderer());
 
-            if (Game::player.isDead() && !quit)
-            {
-                Game::GameOver(quit);
-                biomeTop = 0;
-                trailPos = 0;
-                curBiome = Game::RandBiome(biomes, totBiomes);
-                curBiome.setSeed(time(NULL));
-                curBiome.load(biomeTop);
-                SDL_SetRenderTarget(Game::Renderer, trail);
-                SDL_SetRenderDrawColor(Game::Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-                SDL_RenderClear(Game::Renderer);
-                SDL_SetRenderTarget(Game::Renderer, NULL);
+                if (Game::MainPlayer().isDead() && !quit)
+                {
+                    Game::GameOver(quit);
+                    biomeTop = 0;
+                    trailPos = 0;
+                    curBiome = Game::RandBiome(biomes, totBiomes);
+                    curBiome.SetSeed(time(NULL));
+                    curBiome.Load(biomeTop);
+                    SDL_SetRenderTarget(Game::Renderer(), trail);
+                    SDL_SetRenderDrawColor(Game::Renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+                    SDL_RenderClear(Game::Renderer());
+                    SDL_SetRenderTarget(Game::Renderer(), NULL);
 
-                SDL_SetRenderTarget(Game::Renderer, prevtrail);
-                SDL_SetRenderDrawColor(Game::Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-                SDL_RenderClear(Game::Renderer);
-                SDL_SetRenderTarget(Game::Renderer, NULL);
-                prevBiome = curBiome;
-                Time.reset();
+                    SDL_SetRenderTarget(Game::Renderer(), prevtrail);
+                    SDL_SetRenderDrawColor(Game::Renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+                    SDL_RenderClear(Game::Renderer());
+                    SDL_SetRenderTarget(Game::Renderer(), NULL);
+                    prevBiome = curBiome;
+                    Time.reset();
+                }
             }
-
-            }
-
         }
     }
     // Quiting SDL
-    Game::close();
+    Game::Close();
     return 0;
 }

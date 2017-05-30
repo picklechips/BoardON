@@ -13,7 +13,7 @@ public:
     Obstacle(std::string name, int x, int y, int height, int width, int collisionx, int collisiony, int collisionWidth, int collisionHeight, 
                 bool jumpable, bool isBgOnly, float ptstogive, SDL_Texture* obstacles); // Obstacle with collision
 
-    void drawObstacle(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
+    void DrawObstacle(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
     
 
     // Since After the player passes an obstacle, he is in front of it, the obstacle should be drawn to the
@@ -22,33 +22,31 @@ public:
     // to the background and once to the foreground) Two different functions are used, so an object is only
     // drawn to the screen once. drawToBackground is called before the player is drawn, and drawToForeground
     // is called AFTER the player is drawn.
-    void drawToBackground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
-    void drawToForeground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
+    void DrawToBackground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
+    void DrawToForeground(int x, int y, SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer);
 
-    void setxy(int x, int y){xPos = x;yPos = y;}
-    int getxPos(){return xPos;};
-    int getyPos(){return yPos;};
-    int getWidth(){return imgRect.w;};
-    int getHeight(){return imgRect.h;};
-    bool isJumpable(){return jumpable;}
+    void SetPos(int x, int y);
+    int xPos();
+    int yPos();
+    int Width();
+    int Height();
 
 private:
-    std::string name;
+    std::string m_name;
 
-    int xPos;
-    int yPos;
+    int m_xPos;
+    int m_yPos;
     
-    bool canCollide;
-    SDL_Rect collisionRect;
-    bool isBgOnly;
+    bool m_canCollide;
+    SDL_Rect m_collisionRect;
+    bool m_isBgOnly;
     
-    bool jumpable;
-    bool jumpedOver;
+    bool m_jumpable;
 
-    float pointsToGive;
+    float m_pointsToGive;
     
-    SDL_Texture* obstaclesSheet;
-    SDL_Rect imgRect;
+    SDL_Texture* m_obstaclesSheet;
+    SDL_Rect m_imgRect;
 };
 
 #endif

@@ -1,7 +1,4 @@
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <vector>
 #include <iomanip>
 #include <ctime> // Used to seed srand();
 #include <stdlib.h> // used to generate random numbers
@@ -13,20 +10,60 @@
 #include "obstacle.h"
 #include "game.h"
 
-SDL_Window* Game::Window = NULL;
-SDL_Renderer* Game::Renderer = NULL;
-SDL_Texture* Game::PlayerSpriteSheet = NULL;
-SDL_Texture* Game::Obstacles = NULL;
-SDL_Texture* Game::lives;
-TTF_Font* Game::font = NULL;
-TTF_Font* Game::largeFont = NULL;
+SDL_Window* Game::m_window = NULL;
+SDL_Renderer* Game::m_renderer = NULL;
+SDL_Texture* Game::m_playerSpriteSheet = NULL;
+SDL_Texture* Game::m_obstacleSpriteSheet = NULL;
+SDL_Texture* Game::m_livesImg;
+TTF_Font* Game::m_defaultFont = NULL;
+TTF_Font* Game::m_largeFont = NULL;
 
-Player Game::player = Player();
+Player Game::m_player;
 
 using namespace std;
 
+//Accessors
+SDL_Window* Game::Window()
+{
+    return m_window;
+}
+
+SDL_Renderer* Game::Renderer()
+{
+    return m_renderer;
+}
+
+SDL_Texture* Game::PlayerSpriteSheet()
+{
+    return m_playerSpriteSheet;
+}
+
+SDL_Texture* Game::ObstacleSpriteSheet()
+{
+    return m_obstacleSpriteSheet;
+}
+
+SDL_Texture* Game::LivesIMG()
+{
+    return m_livesImg;
+}
+
+TTF_Font* Game::DefaultFont()
+{
+    return m_defaultFont;
+}
+TTF_Font* Game::LargeFont()
+{
+    return m_largeFont;
+}
+
+Player& Game::MainPlayer()
+{
+    return m_player;
+}
+
 // Initializing the game
-bool Game::init()
+bool Game::Init()
 {
     // Flag to check if initialization was succesful
     bool goodInit = true;
@@ -46,23 +83,23 @@ bool Game::init()
         }
 
         // Creating the window
-        Window = SDL_CreateWindow("Super Snowboarding", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-        if (Window == NULL)
+        m_window = SDL_CreateWindow("BoardON", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        if (m_window == NULL)
         {
             cout << "The window could be be created! SDL_Error: " << SDL_GetError() << endl;
             goodInit = false;
         }
         else
         {
-            Renderer = SDL_CreateRenderer(Window, -1, SDL_RENDERER_ACCELERATED);
-            if (Renderer == NULL)
+            m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
+            if (m_renderer == NULL)
             {
                 cout << "Error creating the renderer! SDL_Error: " << SDL_GetError();
                 goodInit = false;
             }
             else
             {
-                SDL_SetRenderDrawColor(Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
             }
             //Initialize SDL_ttf
             if( TTF_Init() == -1 )
@@ -73,10 +110,10 @@ bool Game::init()
         }
     }
 
-    return goodInit; // Returrn whether or not the initialization was successful
+    return goodInit;
 }
 
-SDL_Texture* Game::loadTexture(string path)
+SDL_Texture* Game::LoadTexture(string path)
 {
     SDL_Texture* newTexture = NULL; // Used to store the texture
 
@@ -91,7 +128,7 @@ SDL_Texture* Game::loadTexture(string path)
         // colorKey the image (set transparency)
         SDL_SetColorKey( loadedImage, SDL_TRUE, SDL_MapRGB( loadedImage->format, 0xFF, 0, 0xFF ) );
         // Creating the texture from the loaded surface
-        newTexture = SDL_CreateTextureFromSurface(Renderer, loadedImage);
+        newTexture = SDL_CreateTextureFromSurface(m_renderer, loadedImage);
         if (newTexture == NULL)
         {
             cout << "Unable to create a texture from " << path << " /// SDL_Error: " << SDL_GetError();
@@ -104,43 +141,43 @@ SDL_Texture* Game::loadTexture(string path)
     return newTexture;
 }
 
-bool Game::loadMedia()
+bool Game::LoadMedia()
 {
     // Flag to check if loading was successful
     bool goodLoad = true;
 
     // Loading the player spritesheet
-    PlayerSpriteSheet = loadTexture("../images/playerSpriteSheet.bmp");
+    m_playerSpriteSheet = LoadTexture("../images/playerSpriteSheet.bmp");
     // Check whether or not loading the image was successful
-    if (PlayerSpriteSheet == NULL)
+    if (m_playerSpriteSheet == NULL)
     {
         cout << "There was an error loading the image! SDL_Error: " << SDL_GetError() << endl;
         goodLoad = false;
     }
 
-    Obstacles = loadTexture("../images/ObstacleSpriteSheet.bmp");
-    if (Obstacles == NULL)
+    m_obstacleSpriteSheet = LoadTexture("../images/ObstacleSpriteSheet.bmp");
+    if (m_obstacleSpriteSheet == NULL)
     {
         cout << "There was an error loading the image! SDL_Error: " << SDL_GetError() << endl;
         goodLoad = false;
     }
 
-    font = TTF_OpenFont("../images/font.ttf", 20);
-    if (font == NULL)
+    m_defaultFont = TTF_OpenFont("../images/font.ttf", 20);
+    if (m_defaultFont == NULL)
     {
         cout << "Error loading font! SDL_Error: " << TTF_GetError() << endl;
         goodLoad = false;
     }
 
-    largeFont = TTF_OpenFont("../images/font.ttf", 40);
-    if (largeFont == NULL)
+    m_largeFont = TTF_OpenFont("../images/font.ttf", 40);
+    if (m_largeFont == NULL)
     {
         cout << "Error loading font! SDL_Error: " << TTF_GetError() << endl;
         goodLoad = false;
     }
 
-    lives = loadTexture("../images/Life.bmp");
-    if (lives == NULL)
+    m_livesImg = LoadTexture("../images/Life.bmp");
+    if (m_livesImg == NULL)
     {
         cout << "There was an error loading the LIFE image! SDL_Error: " << SDL_GetError() << endl;
         goodLoad = false;
@@ -151,81 +188,84 @@ bool Game::loadMedia()
 }
 
 // Quitting SDL
-void Game::close()
+void Game::Close()
 {
     // Freeing the textures from memory
-    SDL_DestroyTexture(PlayerSpriteSheet);
-    PlayerSpriteSheet = NULL;
+    SDL_DestroyTexture(m_playerSpriteSheet);
+    m_playerSpriteSheet = NULL;
 
-    SDL_DestroyTexture(Obstacles);
-    Obstacles = NULL;
+    SDL_DestroyTexture(m_obstacleSpriteSheet);
+    m_obstacleSpriteSheet = NULL;
 
-    SDL_DestroyTexture(lives);
-    lives = NULL;
+    SDL_DestroyTexture(m_livesImg);
+    m_livesImg = NULL;
 
-    TTF_CloseFont(font);
-    font = NULL;
+    TTF_CloseFont(m_defaultFont);
+    m_defaultFont = NULL;
+
+    TTF_CloseFont(m_largeFont);
+    m_defaultFont = NULL;
     TTF_Quit();
 
     // Destroying the window
-    SDL_DestroyRenderer(Renderer);
-    SDL_DestroyWindow(Window);
-    Renderer = NULL;
-    Window = NULL;
+    SDL_DestroyRenderer(m_renderer);
+    SDL_DestroyWindow(m_window);
+    m_renderer = NULL;
+    m_window = NULL;
 
     // Quitting SDL
     SDL_Quit();
 }
 
-void Game::drawTrails(SDL_Texture * src, SDL_Texture * curdst, SDL_Texture * prevdst, int yPos, SDL_Rect &camera)
+void Game::DrawTrails(SDL_Texture * src, SDL_Texture * curdst, SDL_Texture * prevdst, int yPos, SDL_Rect &camera)
 {
     // DRAWING THE TRAILS
-    if (!player.IsInAir())
+    if (!m_player.IsInAir())
     {
-        SDL_SetRenderTarget(Renderer, curdst); // Setting the render target to the background
+        SDL_SetRenderTarget(m_renderer, curdst); // Setting the render target to the background
 
-        SDL_Rect trailRect = {player.xPos() - camera.x, player.yPos()-yPos+24, 32, 8}; // Calculating where the trail should be drawn
-        SDL_RenderCopy(Renderer, src, NULL, &trailRect); // Drawing the trail to the background
-        SDL_SetRenderTarget(Renderer, NULL); // Resetting the render target to the normal renderer
+        SDL_Rect trailRect = {m_player.xPos() - camera.x, m_player.yPos()-yPos+24, 32, 8}; // Calculating where the trail should be drawn
+        SDL_RenderCopy(m_renderer, src, NULL, &trailRect); // Drawing the trail to the background
+        SDL_SetRenderTarget(m_renderer, NULL); // Resetting the render target to the normal renderer
     }
     // Draw the trails
     SDL_Rect prevBackgroundRect = {0, yPos - SCREEN_HEIGHT - camera.y, SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_Rect backgroundRect = {0, yPos - camera.y, SCREEN_WIDTH, SCREEN_HEIGHT};
-    SDL_RenderCopy(Renderer, prevdst, NULL, &prevBackgroundRect); // Draw the previous trail
-    SDL_RenderCopy(Renderer, curdst, NULL, &backgroundRect); // Draw the texture with the trail drawn onto it to the screen
+    SDL_RenderCopy(m_renderer, prevdst, NULL, &prevBackgroundRect); // Draw the previous trail
+    SDL_RenderCopy(m_renderer, curdst, NULL, &backgroundRect); // Draw the texture with the trail drawn onto it to the screen
 }
 // Drawing everything to the screen
-void Game::draw(Biome curBiome, SDL_Rect camera, int biomeTop, Biome prevBiome, float deltaTime)
+void Game::Draw(Biome curBiome, SDL_Rect camera, int biomeTop, Biome prevBiome, float deltaTime)
 {
     // Drawing to the screen
     // DRAWING THE BACKGROUND
-    prevBiome.spawnToBackground(camera, deltaTime, player, Renderer);
-    curBiome.spawnToBackground(camera, deltaTime, player, Renderer);
+    prevBiome.SpawnToBackground(camera, deltaTime, m_player, m_renderer);
+    curBiome.SpawnToBackground(camera, deltaTime, m_player, m_renderer);
 
-    player.draw(camera, Renderer, PlayerSpriteSheet);
+    m_player.draw(camera, m_renderer, m_playerSpriteSheet);
 
     // FORGROUND
-    prevBiome.spawnToForeground(camera, deltaTime, player, Renderer);
-    curBiome.spawnToForeground(camera, deltaTime, player, Renderer);
+    prevBiome.SpawnToForeground(camera, deltaTime, m_player, m_renderer);
+    curBiome.SpawnToForeground(camera, deltaTime, m_player, m_renderer);
 
     // Rendering the player's lives and score
-    player.renderLives(Renderer, lives);
-    player.renderScore(Renderer, font);
+    m_player.renderLives(m_renderer, m_livesImg);
+    m_player.renderScore(m_renderer, m_defaultFont);
 
 
 
-    if (player.collided())
+    if (m_player.collided())
     {
-        curBiome.setSeed(time(NULL));
+        curBiome.SetSeed(time(NULL));
     }
 }
 void Game::RenderText(int x, int y, string text, SDL_Color color, TTF_Font * fnt)
 {
     // Displaying message on SDL window
     SDL_Surface* txt = TTF_RenderText_Solid(fnt, text.c_str(), color);
-    SDL_Texture* txture = SDL_CreateTextureFromSurface(Renderer, txt);
+    SDL_Texture* txture = SDL_CreateTextureFromSurface(m_renderer, txt);
     SDL_Rect dst = {x, y, txt->w, txt->h};
-    SDL_RenderCopy(Renderer, txture, NULL, &dst);
+    SDL_RenderCopy(m_renderer, txture, NULL, &dst);
 
     SDL_FreeSurface(txt);
     SDL_DestroyTexture(txture);
@@ -257,19 +297,19 @@ void Game::GameOver(bool& endgame)
     };
 
     // Displaying message on SDL window
-    SDL_RenderClear(Renderer);
+    SDL_RenderClear(m_renderer);
     SDL_Color textColour = {0, 0, 0};
 
-    RenderText(SCREEN_WIDTH/2 - 110, 20, "GAME OVER YOU LOSE", textColour, largeFont);
+    RenderText(SCREEN_WIDTH/2 - 110, 20, "GAME OVER YOU LOSE", textColour, m_largeFont);
     textColour = {255, 0, 0};
-    RenderText(SCREEN_WIDTH/2 - 62, 50, "HIGH SCORES", textColour, largeFont);
+    RenderText(SCREEN_WIDTH/2 - 62, 50, "HIGH SCORES", textColour, m_largeFont);
 
     SDL_Color textColor = {0, 0, 0, 0xFF};
 
     SDL_Event e;
 
     string inputText = "Rider";
-    SDL_RenderPresent(Renderer);
+    SDL_RenderPresent(m_renderer);
     bool gettingInput = true;
 
 
@@ -317,7 +357,7 @@ void Game::GameOver(bool& endgame)
 
         // Converting player's score to string
         stringstream scoress;
-        scoress << player.getScore();
+        scoress << m_player.getScore();
         scoress >> playerScore;
 
         for (int x = 0; x < scores.size(); x++)
@@ -327,7 +367,7 @@ void Game::GameOver(bool& endgame)
             int score1;
             ss >> score1;
 
-            if (player.getScore() > score1 || scores.size() < 10)
+            if (m_player.getScore() > score1 || scores.size() < 10)
             {
                 top10 = true;
                 scores.push_back(highScore());
@@ -346,45 +386,45 @@ void Game::GameOver(bool& endgame)
 
     if (top10)
     {
-    SDL_StartTextInput();
-    while (gettingInput)
-    {
-        SDL_RenderClear(Renderer);
-        textColour={0, 0, 0};
-        RenderText(SCREEN_WIDTH/2 - 110, 20, "GAME OVER YOU LOSE!", textColour, largeFont);
-        textColour={255, 0, 0};
-        RenderText(SCREEN_WIDTH/2 - 230, 50, "New high score! Please enter your name:", textColour, largeFont);
-
-        while (SDL_PollEvent(&e) != 0)
+        SDL_StartTextInput();
+        while (gettingInput)
         {
+            SDL_RenderClear(m_renderer);
+            textColour={0, 0, 0};
+            RenderText(SCREEN_WIDTH/2 - 110, 20, "GAME OVER YOU LOSE!", textColour, m_largeFont);
+            textColour={255, 0, 0};
+            RenderText(SCREEN_WIDTH/2 - 230, 50, "New high score! Please enter your name:", textColour, m_largeFont);
 
-            if (e.type == SDL_QUIT) // Checking if the current event on the poll is QUIT, if it is set quit to true to end the program
+            while (SDL_PollEvent(&e) != 0)
             {
-                gettingInput = false;
-                endgame = true;
-                return;
+
+                if (e.type == SDL_QUIT) // Checking if the current event on the poll is QUIT, if it is set quit to true to end the program
+                {
+                    gettingInput = false;
+                    endgame = true;
+                    return;
+                }
+                else if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_BACKSPACE && inputText.length() > 0 )
+                {
+                    //lop off character
+                    inputText.pop_back();
+                }
+                else if( e.type == SDL_TEXTINPUT && inputText.length() < 8)
+                {
+                    //Append character
+                    inputText += e.text.text;
+                }
+                else if(e.key.keysym.sym == SDLK_RETURN)
+                    gettingInput = false;
             }
-            else if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_BACKSPACE && inputText.length() > 0 )
-            {
-                //lop off character
-                inputText.pop_back();
-            }
-            else if( e.type == SDL_TEXTINPUT && inputText.length() < 8)
-            {
-                //Append character
-                inputText += e.text.text;
-            }
-            else if(e.key.keysym.sym == SDLK_RETURN)
-                gettingInput = false;
+            if (inputText != "")
+                RenderText(SCREEN_WIDTH/2-13, 95, inputText.c_str(), textColor, m_defaultFont);
+            else
+                RenderText(SCREEN_WIDTH/2-13, 95, " ", textColor, m_defaultFont);
+            SDL_RenderPresent(m_renderer);
         }
-        if (inputText != "")
-            RenderText(SCREEN_WIDTH/2-13, 95, inputText.c_str(), textColor, font);
-        else
-            RenderText(SCREEN_WIDTH/2-13, 95, " ", textColor, font);
-        SDL_RenderPresent(Renderer);
-    }
         scores[scores.size()-1].name = inputText;
-    SDL_StopTextInput();
+        SDL_StopTextInput();
     }
     // Sorting the scores
        for (int x = 0; x < scores.size(); x++)
@@ -413,11 +453,11 @@ void Game::GameOver(bool& endgame)
     for (int x = 0; x < scores.size(); x++)
     {
         string output = scores[x].name;
-        RenderText(SCREEN_WIDTH/2 - 60, x*22 + 125, output.c_str(), textColor, font);
+        RenderText(SCREEN_WIDTH/2 - 60, x*22 + 125, output.c_str(), textColor, m_defaultFont);
         output = scores[x].score;
-        RenderText(SCREEN_WIDTH/2 +20, x*22 + 125, output.c_str(), textColor, font);
+        RenderText(SCREEN_WIDTH/2 +20, x*22 + 125, output.c_str(), textColor, m_defaultFont);
     }
-    SDL_RenderPresent(Renderer);
+    SDL_RenderPresent(m_renderer);
     while (scores.size() > 10)
     {
         scores.pop_back();
@@ -445,8 +485,8 @@ void Game::GameOver(bool& endgame)
 
         }
         outputFile.close();
-        RenderText(SCREEN_WIDTH/2 - 95, SCREEN_HEIGHT - 40, "Press Enter to Retry, ESC to quit.", textColor, font);
-        SDL_RenderPresent(Renderer);
+        RenderText(SCREEN_WIDTH/2 - 95, SCREEN_HEIGHT - 40, "Press Enter to Retry, ESC to quit.", textColor, m_defaultFont);
+        SDL_RenderPresent(m_renderer);
         bool exit = false;
         while(!exit)
         {
@@ -465,7 +505,6 @@ void Game::GameOver(bool& endgame)
                 }
             }
     }
-    player.reset();
 
-
+    m_player.reset();
 }

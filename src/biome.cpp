@@ -16,34 +16,39 @@ Biome::Biome(vector<Obstacle> obsts, vector<int> amntObsts)
         for (int y = 0; y < amntObsts[x]; y++)
         {
             // Adding the amount and type of each obstacle to the vector
-            obstsInBiome.push_back(obsts[x]);
+            m_obstsInBiome.push_back(obsts[x]);
         }
     }
 }
 
-// Loading the Biome
-void Biome::load(int topOfBiome)
+void Biome::SetSeed(double seed)
 {
-    srand(seed);
+    m_seed = seed;
+}
+
+// Loading the Biome
+void Biome::Load(int topOfBiome)
+{
+    srand(m_seed);
     vector <SDL_Rect> obstPositions;
-    for (int x = 0; x < obstsInBiome.size(); x++)
+    for (int x = 0; x < m_obstsInBiome.size(); x++)
     {
         int xLoc = rand() % 1304 - 64; // Randomizing the x location
-        int yLoc = rand() % (960 - obstsInBiome[x].getHeight()) + topOfBiome; // Randomizing the y location
+        int yLoc = rand() % (960 - m_obstsInBiome[x].Height()) + topOfBiome; // Randomizing the y location
         if (x==0)
         {
             xLoc = -1000;
             yLoc = -1000;
         }
-        if (yLoc + obstsInBiome[x].getHeight() > 960 + topOfBiome)
+        if (yLoc + m_obstsInBiome[x].Height() > 960 + topOfBiome)
         {
             cout << "The obstacle is outside of the chunk!" << endl;
-            yLoc -= obstsInBiome[x].getHeight() - (yLoc + obstsInBiome[x].getHeight() - 960 + topOfBiome);
+            yLoc -= m_obstsInBiome[x].Height() - (yLoc + m_obstsInBiome[x].Height() - 960 + topOfBiome);
         }
         // Calculating the sides of the obstacle trying to spawn
         int top = yLoc;
-        int bottom = yLoc + obstsInBiome[x].getHeight();
-        int right = xLoc + obstsInBiome[x].getWidth();
+        int bottom = yLoc + m_obstsInBiome[x].Height();
+        int right = xLoc + m_obstsInBiome[x].Width();
         int left = xLoc;
 
         for (int i = 0; i < obstPositions.size(); i++)
@@ -64,30 +69,30 @@ void Biome::load(int topOfBiome)
         // If the object is pushed too far down, into the next chunk, spawn it off screen to avoid overlapping.
         if (bottom > topOfBiome+960)
         {
-            obstsInBiome[x].setxy(-1000, -1000);
+            m_obstsInBiome[x].SetPos(-1000, -1000);
         }
         else
         {
-            obstPositions.push_back(Rect(xLoc, yLoc, obstsInBiome[x].getWidth(), obstsInBiome[x].getHeight()));
-            obstsInBiome[x].setxy(xLoc, yLoc);
+            obstPositions.push_back(Rect(xLoc, yLoc, m_obstsInBiome[x].Width(), m_obstsInBiome[x].Height()));
+            m_obstsInBiome[x].SetPos(xLoc, yLoc);
         }
     }
 }
 
 // Spawning the biome to the foreground (Before the player passes the object)
-void Biome::spawnToForeground(SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer)
+void Biome::SpawnToForeground(SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer)
 {
-    for (int x = 0; x < obstsInBiome.size(); x++)
+    for (int x = 0; x < m_obstsInBiome.size(); x++)
     {
-        obstsInBiome[x].drawToForeground(obstsInBiome[x].getxPos(), obstsInBiome[x].getyPos(), camera, deltaTime, player, renderer);
+        m_obstsInBiome[x].DrawToForeground(m_obstsInBiome[x].xPos(), m_obstsInBiome[x].yPos(), camera, deltaTime, player, renderer);
     }
 }
 
 // Spawning the biome to the background (After the player passes the object)
-void Biome::spawnToBackground(SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer)
+void Biome::SpawnToBackground(SDL_Rect camera, float deltaTime, Player &player, SDL_Renderer* renderer)
 {
-    for (int x = 0; x < obstsInBiome.size(); x++)
+    for (int x = 0; x < m_obstsInBiome.size(); x++)
     {
-        obstsInBiome[x].drawToBackground(obstsInBiome[x].getxPos(), obstsInBiome[x].getyPos(), camera, deltaTime, player, renderer);
+        m_obstsInBiome[x].DrawToBackground(m_obstsInBiome[x].xPos(), m_obstsInBiome[x].yPos(), camera, deltaTime, player, renderer);
     }
 }

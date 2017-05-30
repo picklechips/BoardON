@@ -13,34 +13,48 @@ public:
 	~Game();
 	
 	// Main window
-	static SDL_Window* Window;
-	static SDL_Renderer* Renderer;
+	static SDL_Window* Window();
+	static SDL_Renderer* Renderer();
 
 	// Sprite sheets
-	static SDL_Texture* PlayerSpriteSheet;
-	static SDL_Texture* Obstacles;
-	static SDL_Texture* lives;
+	static SDL_Texture* PlayerSpriteSheet();
+	static SDL_Texture* ObstacleSpriteSheet();
+	static SDL_Texture* LivesIMG();
 
 	// Fonts
-	static TTF_Font* font;
-	static TTF_Font* largeFont;
+	static TTF_Font* DefaultFont();
+	static TTF_Font* LargeFont();
 
-	static Player player;
+	static Player& MainPlayer();
 
 	// Game functions
-	static bool init();
-	static void close();
+	static bool Init();
+	static void Close();
 	
-	static SDL_Texture* loadTexture(std::string path);
-	static bool loadMedia();
+	static SDL_Texture* LoadTexture(std::string path);
+	static bool LoadMedia();
 	
-	static void drawTrails(SDL_Texture * src, SDL_Texture * curdst, SDL_Texture * prevdst, int yPos, SDL_Rect &camera);
-	static void draw(Biome curBiome, SDL_Rect camera, int biomeTop, Biome prevBiome, float deltaTime);
+	static void DrawTrails(SDL_Texture * src, SDL_Texture * curdst, SDL_Texture * prevdst, int yPos, SDL_Rect &camera);
+	static void Draw(Biome curBiome, SDL_Rect camera, int biomeTop, Biome prevBiome, float deltaTime);
 	static void RenderText(int x, int y, std::string text, SDL_Color color, TTF_Font * fnt);
 	
 	static Biome RandBiome(Biome biomes[], int amountOfBiomes);
 	
 	static void GameOver(bool& endgame);
+
+private:
+	static SDL_Window* m_window;
+	static SDL_Renderer* m_renderer;
+
+
+	static SDL_Texture* m_playerSpriteSheet;
+	static SDL_Texture* m_obstacleSpriteSheet;
+	static SDL_Texture* m_livesImg;
+
+	static TTF_Font* m_defaultFont;
+	static TTF_Font* m_largeFont;
+
+	static Player m_player;
 };
 
 #endif
