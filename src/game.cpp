@@ -423,9 +423,13 @@ void Game::GameOver(bool& endgame)
                 RenderText(SCREEN_WIDTH/2-13, 95, " ", textColor, m_defaultFont);
             SDL_RenderPresent(m_renderer);
         }
+        if (inputText == "")
+            inputText = " ";
+        
         scores[scores.size()-1].name = inputText;
         SDL_StopTextInput();
     }
+
     // Sorting the scores
        for (int x = 0; x < scores.size(); x++)
         {
