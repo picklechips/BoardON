@@ -20,20 +20,9 @@ Extract it, go into sources and run the .exe
 #### Linux:
 SDL2 and SDL2-ttf are required.
 
-Open up a terminal and type
-
-`apt-get install libsdl2-dev`
-
-then
-
-`apt-get install libsdl2-ttf-dev`
-
-Once that's done, download this repository and cd into the `src` folder.
-
-To compile it, type
-
-`make all`
-
-then to run it either type 
-`./BoardON`
-or use a file explorer to navigate to the `src` folder and manually run `BoardON`
+```
+$ apt-get install libsdl2-dev
+$ apt-get install libsdl2-ttf-dev
+$ make all
+$ ./BoardON
+```
